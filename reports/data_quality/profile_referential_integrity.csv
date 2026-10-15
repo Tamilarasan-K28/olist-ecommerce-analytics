@@ -1,0 +1,10 @@
+relationship,child_rows_checked,orphan_rows,distinct_child_keys,distinct_orphan_keys
+orders.customer_id -> customers.customer_id,99441,0,99441,0
+order_items.order_id -> orders.order_id,112650,0,98666,0
+order_items.product_id -> products.product_id,112650,0,32951,0
+order_items.seller_id -> sellers.seller_id,112650,0,3095,0
+payments.order_id -> orders.order_id,103886,0,99440,0
+reviews.order_id -> orders.order_id,99224,0,98673,0
+products.product_category_name -> translation.product_category_name,32341,13,73,2
+customers.customer_zip_code_prefix -> geolocation.geolocation_zip_code_prefix,99441,278,14994,157
+sellers.seller_zip_code_prefix -> geolocation.geolocation_zip_code_prefix,3095,7,2246,7

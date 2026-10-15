@@ -1,0 +1,17 @@
+table,column,non_blank,non_numeric,min,median,mean,max,zeros,negatives
+order_items,order_item_id,112650,0,1.0,1.0,1.1978,21.0,0,0
+order_items,price,112650,0,0.85,74.99,120.6537,6735.0,0,0
+order_items,freight_value,112650,0,0.0,16.26,19.9903,409.68,383,0
+payments,payment_sequential,103886,0,1.0,1.0,1.0927,29.0,0,0
+payments,payment_installments,103886,0,0.0,1.0,2.8533,24.0,2,0
+payments,payment_value,103886,0,0.0,100.0,154.1004,13664.08,9,0
+reviews,review_score,99224,0,1.0,5.0,4.0864,5.0,0,0
+products,product_name_lenght,32341,0,5.0,51.0,48.4769,76.0,0,0
+products,product_description_lenght,32341,0,4.0,595.0,771.4953,3992.0,0,0
+products,product_photos_qty,32341,0,1.0,1.0,2.189,20.0,0,0
+products,product_weight_g,32949,0,0.0,700.0,2276.4725,40425.0,4,0
+products,product_length_cm,32949,0,7.0,25.0,30.8151,105.0,0,0
+products,product_height_cm,32949,0,2.0,13.0,16.9377,105.0,0,0
+products,product_width_cm,32949,0,6.0,20.0,23.1967,118.0,0,0
+geolocation,geolocation_lat,1000163,0,-36.6053744107061,-22.91937749486411,-21.1762,45.06593318269697,0,998827
+geolocation,geolocation_lng,1000163,0,-101.46676644931476,-46.63787866960149,-46.3905,121.10539381057764,0,1000160

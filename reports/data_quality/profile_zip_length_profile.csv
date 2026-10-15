@@ -1,0 +1,4 @@
+table,column,string_length,rows
+customers,customer_zip_code_prefix,5,99441
+sellers,seller_zip_code_prefix,5,3095
+geolocation,geolocation_zip_code_prefix,5,1000163

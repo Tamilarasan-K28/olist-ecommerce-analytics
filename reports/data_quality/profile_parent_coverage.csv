@@ -1,0 +1,7 @@
+parent,child,distinct_parent_keys,parents_without_child_rows,pct_without_child_rows
+orders.order_id,order_items.order_id,99441,775,0.779
+orders.order_id,payments.order_id,99441,1,0.001
+orders.order_id,reviews.order_id,99441,768,0.772
+customers.customer_id,orders.customer_id,99441,0,0.0
+products.product_id,order_items.product_id,32951,0,0.0
+sellers.seller_id,order_items.seller_id,3095,0,0.0

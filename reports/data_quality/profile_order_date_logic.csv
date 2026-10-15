@@ -1,0 +1,6 @@
+check,orders_violating
+approved_before_purchase,0
+carrier_date_before_approved,1359
+customer_delivery_before_carrier,23
+customer_delivery_before_purchase,0
+estimated_delivery_before_purchase,0
