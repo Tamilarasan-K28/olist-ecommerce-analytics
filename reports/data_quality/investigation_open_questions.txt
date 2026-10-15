@@ -1,0 +1,87 @@
+
+=== Q1: review_id values appearing on more than one row ===
+review_ids appearing more than once: 789
+rows per duplicated review_id:
+rows
+2    764
+3     25
+groups where every row shares one order: 0
+groups where every row shares one score: 789
+groups where every row shares one comment message: 789
+groups where every row shares one creation date: 789
+groups where every row shares one customer_unique_id: 789
+
+=== Q2: orders with more than one review row ===
+review rows per order (orders with at least one review):
+reviews
+1    98126
+2      543
+3        4
+orders with more than one review row: 547
+  of those, orders whose reviews have differing scores: 202
+
+=== Q3: product categories ===
+products with blank category: 610
+products whose category is absent from the translation table: 13
+category name -> product count:
+product_category_name
+portateis_cozinha_e_preparadores_de_alimentos    10
+pc_gamer                                          3
+
+=== Q4: order status vs timestamps ===
+delivered orders WITH a customer delivery date: 96470
+delivered orders with NO customer delivery date: 8
+canceled orders WITH a customer delivery date: 6
+
+carrier date earlier than approval: 1359 orders
+gap in hours (approval minus carrier date):
+count    1359.00
+mean       24.75
+std       115.31
+min         0.01
+25%         1.42
+50%        17.17
+75%        25.96
+max      4109.26
+their order_status:
+order_status
+delivered    1350
+shipped         9
+
+customer delivery earlier than carrier date: 23 orders
+gap in days (carrier date minus customer delivery date):
+count    23.00
+mean      3.27
+std       3.72
+min       0.02
+25%       0.97
+50%       1.66
+75%       5.36
+max      16.10
+
+=== Q5: payments per order ===
+payment rows per order -> number of orders:
+1     96479
+2      2382
+3       301
+4       108
+5        52
+6        36
+7        28
+8        11
+9         9
+10        5
+11        8
+12        8
+13        3
+14        2
+15        2
+19        2
+21        1
+22        1
+26        1
+29        1
+
+status of orders with no payment row:
+order_status
+delivered    1
