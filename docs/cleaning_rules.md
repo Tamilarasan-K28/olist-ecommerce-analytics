@@ -28,3 +28,11 @@ Problems are flagged rather than silently deleted. Every rule cites a measured n
 - R5, R7, R8 confirmed by the project author. R7 translations are MANUAL (author's own) and are labelled category_source = manual.
 - R14 to R17 are implemented as flags only (flag_payment_type_not_defined, flag_zero_payment_value, flag_zero_installments, flag_outside_brazil_box, flag_invalid_state). No values are changed or removed. Final treatment awaits review of investigation_pending_rules.txt.
 - R18 (revenue definition) remains open. Cleaned tables keep price, freight_value and payment_value untouched.
+
+## Final decisions (Step 4b)
+- R14: not_defined payments (3 rows, all value 0, all on canceled orders) kept and flagged; excluded from payment-type analysis.
+- R15: 6 zero-value vouchers kept. 2 zero-installment credit card rows kept and flagged.
+- R16: geolocation coordinates flagged against an approximate Brazil box (an assumption). 42 raw rows were outside it; zip-level count measured separately.
+- R17: 0 invalid state codes. No action.
+- R18: Revenue = sum of price (order_items) for non-canceled, non-unavailable orders. Freight reported separately. payment_value used for payment-method analysis and reconciliation only. 378 of 98,665 orders differ by more than 0.01 between payments and items (about 0.38%); unexplained and flagged.
+- R19: product_weight_g = 0 (4 products) treated as missing for weight analysis (author's assumption).
