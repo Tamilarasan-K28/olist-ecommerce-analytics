@@ -1,0 +1,12 @@
+output_table,source_table,source_rows,output_rows
+customers,customers,99441,99441
+orders,orders,99441,99441
+order_items,order_items,112650,112650
+payments,payments,103886,103886
+payments_by_order,payments,103886,99440
+reviews,reviews,99224,99224
+order_reviews,reviews,99224,98673
+products,products,32951,32951
+sellers,sellers,3095,3095
+geolocation_zip,geolocation,1000163,19015
+category_translation,translation,71,71

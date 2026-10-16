@@ -23,3 +23,8 @@ Problems are flagged rather than silently deleted. Every rule cites a measured n
 | R16 | geolocation | Coordinate range not yet checked | Flag rows outside Brazil | Pending (see Q8) |
 | R17 | customers, sellers | State codes not yet inspected | Validate against the 2-letter list | Pending (see Q8) |
 | R18 | order_items, payments | Revenue definition not yet chosen | Choose after Q7 reconciliation | Pending |
+
+## Decisions recorded (Step 4)
+- R5, R7, R8 confirmed by the project author. R7 translations are MANUAL (author's own) and are labelled category_source = manual.
+- R14 to R17 are implemented as flags only (flag_payment_type_not_defined, flag_zero_payment_value, flag_zero_installments, flag_outside_brazil_box, flag_invalid_state). No values are changed or removed. Final treatment awaits review of investigation_pending_rules.txt.
+- R18 (revenue definition) remains open. Cleaned tables keep price, freight_value and payment_value untouched.
