@@ -4,6 +4,7 @@ orders,orders,99441,99441
 order_items,order_items,112650,112650
 payments,payments,103886,103886
 payments_by_order,payments,103886,99440
+order_financials,orders,99441,99441
 reviews,reviews,99224,99224
 order_reviews,reviews,99224,98673
 products,products,32951,32951
