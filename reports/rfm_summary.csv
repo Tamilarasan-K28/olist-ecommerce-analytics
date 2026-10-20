@@ -1,0 +1,6 @@
+segment,people,avg_recency_days,avg_orders,total_revenue,pct_people,pct_revenue
+loyal_recent,1649,159.72,2.15,430612.31,1.72,3.19
+new_recent,46032,161.28,1.0,6368517.98,47.9,47.19
+no_revenue,1113,357.99,1.01,0.0,1.16,0.0
+one_time_lapsed,45962,414.71,1.0,6353529.92,47.83,47.08
+repeat_lapsed,1340,402.64,2.08,341740.53,1.39,2.53
