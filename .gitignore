@@ -8,4 +8,4 @@ data/interim/
 data/processed/
 *.pbix.tmp
 .env
-"@ | Set-Content -Encoding utf8 .gitignore
+"@ | Set-Content -Encoding utf8 .gitignorereports/rfm_segments.csv
