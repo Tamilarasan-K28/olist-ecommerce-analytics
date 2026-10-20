@@ -1,0 +1,3 @@
+route,orders,avg_delivery_days,late_pct
+cross_state,61769,15.15,9.27
+same_state,34701,7.95,6.06
