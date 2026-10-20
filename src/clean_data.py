@@ -121,8 +121,6 @@ def clean_payments(payments) -> pd.DataFrame:
     p["flag_payment_type_not_defined"] = p["payment_type"] == "not_defined"
     p["flag_zero_payment_value"] = p["payment_value"] == 0
     p["flag_zero_installments"] = p["payment_installments"] == 0
-    p["flag_zero_weight"] = p["product_weight_g"] == 0
-    p["product_weight_g_clean"] = p["product_weight_g"].where(p["product_weight_g"] > 0)
     return p
 
 
@@ -216,7 +214,7 @@ def clean_sellers(sellers, zip_set) -> pd.DataFrame:
 
 
 def clean_products(products, translation) -> pd.DataFrame:
-    """R6, R7: English category with a column recording where it came from."""
+    """R6, R7, R19: English category with its source; zero weight flagged."""
     p = to_numeric(blank_to_null(products), [
         "product_name_lenght", "product_description_lenght", "product_photos_qty",
         "product_weight_g", "product_length_cm", "product_height_cm", "product_width_cm"])
@@ -231,6 +229,8 @@ def clean_products(products, translation) -> pd.DataFrame:
         default="untranslated")
     english = from_table.fillna(from_manual)
     p["product_category_english"] = english.where(cat.notna(), "unknown")
+    p["flag_zero_weight"] = p["product_weight_g"] == 0
+    p["product_weight_g_clean"] = p["product_weight_g"].where(p["product_weight_g"] > 0)
     return p
 
 
