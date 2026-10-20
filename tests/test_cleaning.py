@@ -144,3 +144,49 @@ def test_validation_detects_duplicate_and_orphan():
     parent = pd.DataFrame({"k": ["a"]})
     assert cd.check_fk("fk", child, "k", parent, "k")
     assert cd.check_fk("fk", child.iloc[:1], "k", parent, "k") == []
+
+def test_geolocation_outside_box_coordinates_set_missing():
+    geo = pd.DataFrame({
+        "geolocation_zip_code_prefix": ["01046", "99999"],
+        "geolocation_lat": ["-23.5", "50.0"],
+        "geolocation_lng": ["-46.6", "10.0"],
+        "geolocation_city": ["x", "y"], "geolocation_state": ["SP", "SP"],
+    }, dtype=str)
+    z = cd.build_geolocation_zip(geo).set_index("zip_code_prefix")
+    assert pd.isna(z.loc["99999", "lat"]) and pd.isna(z.loc["99999", "lng"])
+    assert z.loc["99999", "lat_median_raw"] == pytest.approx(50.0)
+    assert z.loc["01046", "lat"] == pytest.approx(-23.5)
+
+
+def test_zero_weight_treated_as_missing():
+    products = pd.DataFrame({
+        "product_id": ["p1", "p2"], "product_category_name": ["a", "a"],
+        "product_name_lenght": ["1", "1"], "product_description_lenght": ["1", "1"],
+        "product_photos_qty": ["1", "1"], "product_weight_g": ["0", "250"],
+        "product_length_cm": ["1", "1"], "product_height_cm": ["1", "1"],
+        "product_width_cm": ["1", "1"],
+    }, dtype=str)
+    translation = pd.DataFrame({"product_category_name": ["a"],
+                                "product_category_name_english": ["a_en"]})
+    p = cd.clean_products(products, translation).set_index("product_id")
+    assert p.loc["p1", "flag_zero_weight"]
+    assert pd.isna(p.loc["p1", "product_weight_g_clean"])
+    assert p.loc["p2", "product_weight_g_clean"] == pytest.approx(250.0)
+
+
+def test_order_financials_revenue_and_mismatch():
+    orders = pd.DataFrame({"order_id": ["a", "b", "c", "d"],
+                           "order_status": ["delivered", "canceled", "delivered", "delivered"]})
+    items = pd.DataFrame({"order_id": ["a", "a", "b", "c"],
+                          "order_item_id": [1, 2, 1, 1],
+                          "price": [10.0, 20.0, 5.0, 8.0],
+                          "freight_value": [1.0, 2.0, 1.0, 2.0]})
+    pbo = pd.DataFrame({"order_id": ["a", "b", "c"], "payment_total": [33.0, 6.0, 12.0]})
+    f = cd.build_order_financials(orders, items, pbo).set_index("order_id")
+    assert len(f) == 4
+    assert f.loc["a", "revenue"] == pytest.approx(30.0)
+    assert not f.loc["a", "flag_payment_item_mismatch"]
+    assert pd.isna(f.loc["b", "revenue"]) and not f.loc["b", "is_revenue_eligible"]
+    assert f.loc["c", "flag_payment_item_mismatch"]
+    assert pd.isna(f.loc["d", "item_count"])
+    assert not f.loc["d", "flag_payment_item_mismatch"]

@@ -121,6 +121,8 @@ def clean_payments(payments) -> pd.DataFrame:
     p["flag_payment_type_not_defined"] = p["payment_type"] == "not_defined"
     p["flag_zero_payment_value"] = p["payment_value"] == 0
     p["flag_zero_installments"] = p["payment_installments"] == 0
+    p["flag_zero_weight"] = p["product_weight_g"] == 0
+    p["product_weight_g_clean"] = p["product_weight_g"].where(p["product_weight_g"] > 0)
     return p
 
 
@@ -133,6 +135,26 @@ def build_payments_by_order(p) -> pd.DataFrame:
         distinct_payment_types=("payment_type", "nunique"),
         has_not_defined_payment=("flag_payment_type_not_defined", "any"),
     ).reset_index()
+
+def build_order_financials(orders, items, payments_by_order) -> pd.DataFrame:
+    """R18: one row per order. Revenue = sum of item price for orders that are
+    not canceled/unavailable. Payment total is kept only for reconciliation."""
+    agg = items.groupby("order_id").agg(
+        item_count=("order_item_id", "size"),
+        items_price_total=("price", "sum"),
+        items_freight_total=("freight_value", "sum")).reset_index()
+    f = orders[["order_id", "order_status"]].merge(agg, on="order_id", how="left")
+    f = f.merge(payments_by_order[["order_id", "payment_total"]],
+                on="order_id", how="left")
+    f["payment_minus_items"] = (
+        f["payment_total"] - (f["items_price_total"] + f["items_freight_total"])
+    ).round(2)
+    both = f["items_price_total"].notna() & f["payment_total"].notna()
+    f["flag_payment_item_mismatch"] = both & (f["payment_minus_items"].abs() > 0.01)
+    f["is_revenue_eligible"] = (f["items_price_total"].notna()
+                                & ~f["order_status"].isin(["canceled", "unavailable"]))
+    f["revenue"] = f["items_price_total"].where(f["is_revenue_eligible"])
+    return f
 
 
 def clean_reviews(reviews) -> pd.DataFrame:
@@ -160,7 +182,9 @@ def build_order_reviews(r) -> pd.DataFrame:
 
 
 def build_geolocation_zip(geo) -> pd.DataFrame:
-    """R8, R16: one row per zip using median coordinates. Out-of-box zips flagged."""
+    """R8, R16: one row per zip using median coordinates.
+    Zips whose median falls outside the Brazil box are flagged and their
+    lat/lng set to missing; the raw medians are kept for transparency."""
     g = to_numeric(blank_to_null(geo), ["geolocation_lat", "geolocation_lng"])
     z = g.groupby("geolocation_zip_code_prefix").agg(
         lat=("geolocation_lat", "median"),
@@ -169,6 +193,9 @@ def build_geolocation_zip(geo) -> pd.DataFrame:
     z = z.rename(columns={"geolocation_zip_code_prefix": "zip_code_prefix"})
     inside = z["lat"].between(LAT_MIN, LAT_MAX) & z["lng"].between(LNG_MIN, LNG_MAX)
     z["flag_outside_brazil_box"] = ~inside
+    z["lat_median_raw"] = z["lat"]
+    z["lng_median_raw"] = z["lng"]
+    z.loc[~inside, ["lat", "lng"]] = np.nan
     return z
 
 
@@ -231,6 +258,7 @@ def validate(t: dict) -> list:
     problems += check_unique("geolocation_zip", t["geolocation_zip"], ["zip_code_prefix"])
     problems += check_unique("order_reviews", t["order_reviews"], ["order_id"])
     problems += check_unique("payments_by_order", t["payments_by_order"], ["order_id"])
+    problems += check_unique("order_financials", t["order_financials"], ["order_id"])
     problems += check_fk("orders->customers", t["orders"], "customer_id", t["customers"], "customer_id")
     problems += check_fk("items->orders", t["order_items"], "order_id", t["orders"], "order_id")
     problems += check_fk("items->products", t["order_items"], "product_id", t["products"], "product_id")
@@ -253,14 +281,18 @@ def main() -> int:
     geo_zip = build_geolocation_zip(raw["geolocation"])
     zip_set = set(geo_zip["zip_code_prefix"])
     payments = clean_payments(raw["payments"])
+    payments_by_order = build_payments_by_order(payments)
     reviews = clean_reviews(raw["reviews"])
+    orders = clean_orders(raw["orders"], raw["order_items"], raw["payments"])
+    items = clean_order_items(raw["order_items"])
 
     tables = {
         "customers": clean_customers(raw["customers"], zip_set),
-        "orders": clean_orders(raw["orders"], raw["order_items"], raw["payments"]),
-        "order_items": clean_order_items(raw["order_items"]),
+        "orders": orders,
+        "order_items": items,
         "payments": payments,
-        "payments_by_order": build_payments_by_order(payments),
+        "payments_by_order": payments_by_order,
+        "order_financials": build_order_financials(orders, items, payments_by_order),
         "reviews": reviews,
         "order_reviews": build_order_reviews(reviews),
         "products": clean_products(raw["products"], blank_to_null(raw["translation"])),
@@ -273,30 +305,49 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-    raw_rows = {"customers": "customers", "orders": "orders", "order_items": "order_items",
-                "payments": "payments", "reviews": "reviews", "products": "products",
-                "sellers": "sellers", "geolocation_zip": "geolocation",
-                "category_translation": "translation",
-                "payments_by_order": "payments", "order_reviews": "reviews"}
+    source_of = {"customers": "customers", "orders": "orders", "order_items": "order_items",
+                 "payments": "payments", "reviews": "reviews", "products": "products",
+                 "sellers": "sellers", "geolocation_zip": "geolocation",
+                 "category_translation": "translation",
+                 "payments_by_order": "payments", "order_reviews": "reviews",
+                 "order_financials": "orders"}
     summary = []
     for name, df in tables.items():
         df.to_csv(OUT_DIR / f"{name}_clean.csv", index=False)
-        summary.append({"output_table": name, "source_table": raw_rows[name],
-                        "source_rows": len(raw[raw_rows[name]]), "output_rows": len(df)})
+        summary.append({"output_table": name, "source_table": source_of[name],
+                        "source_rows": len(raw[source_of[name]]), "output_rows": len(df)})
     pd.DataFrame(summary).to_csv(REPORT_DIR / "cleaning_summary.csv", index=False)
-
     print(pd.DataFrame(summary).to_string(index=False))
+
     o = tables["orders"]
     print("\nFlag counts (orders):")
     for c in [c for c in o.columns if c.startswith("flag_")] + ["delivery_metric_eligible"]:
         print(f"  {c}: {int(o[c].sum())}")
-    print("\nCategory source counts (products):")
-    print(tables["products"]["category_source"].value_counts().to_string())
+
+    f = tables["order_financials"]
+    print("\nOrder financials (R18):")
+    print(f"  orders with items and payments, mismatch > 0.01: "
+          f"{int(f['flag_payment_item_mismatch'].sum())}")
+    print(f"  revenue-eligible orders: {int(f['is_revenue_eligible'].sum())}")
+    print(f"  total revenue (sum of price, eligible orders): {f['revenue'].sum():.2f}")
+
+    bad_zips = set(geo_zip.loc[geo_zip["flag_outside_brazil_box"], "zip_code_prefix"])
+    print("\nGeolocation (R16):")
+    print(f"  zips with coordinates set to missing: {len(bad_zips)}")
+    print(f"  customers in those zips: "
+          f"{int(tables['customers']['customer_zip_code_prefix'].isin(bad_zips).sum())}")
+    print(f"  sellers in those zips: "
+          f"{int(tables['sellers']['seller_zip_code_prefix'].isin(bad_zips).sum())}")
+
+    p = tables["products"]
+    print(f"\nProducts with zero weight (R19): {int(p['flag_zero_weight'].sum())}")
+    print("Category source counts (products):")
+    print(p["category_source"].value_counts().to_string())
 
     if problems:
         print("\nVALIDATION FAILED:")
-        for p in problems:
-            print(" -", p)
+        for msg in problems:
+            print(" -", msg)
         return 1
     print("\nVALIDATION PASSED: keys unique, no orphan foreign keys.")
     print(f"Cleaned files written to: {OUT_DIR}")

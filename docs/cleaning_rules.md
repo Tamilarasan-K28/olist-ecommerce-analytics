@@ -36,3 +36,8 @@ Problems are flagged rather than silently deleted. Every rule cites a measured n
 - R17: 0 invalid state codes. No action.
 - R18: Revenue = sum of price (order_items) for non-canceled, non-unavailable orders. Freight reported separately. payment_value used for payment-method analysis and reconciliation only. 378 of 98,665 orders differ by more than 0.01 between payments and items (about 0.38%); unexplained and flagged.
 - R19: product_weight_g = 0 (4 products) treated as missing for weight analysis (author's assumption).
+
+## Step 5 implementation notes
+- R16 implemented: zips with median coordinates outside the approximate Brazil box (an assumption) get lat/lng set to missing; raw medians kept in lat_median_raw / lng_median_raw.
+- R18 implemented: order_financials table (one row per order). revenue = sum of price for orders with items that are not canceled or unavailable. Payment totals used for reconciliation only.
+- R19 implemented: flag_zero_weight and product_weight_g_clean (zero weight treated as missing; author's assumption).
