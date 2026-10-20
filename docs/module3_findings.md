@@ -14,8 +14,11 @@ All figures measured on the Olist data via PostgreSQL / Pandas (see reconciliati
 | F7 | Seller revenue is concentrated | Top 10% of sellers hold 67.4% of revenue | Measured |
 | F8 | Category revenue is less concentrated | Largest category 9.3%; top 7 hold 49.9% | Measured |
 
-## Your reading of the monthly chart
-(TODO: write 2 to 3 sentences in your own words after viewing reports/figures/monthly_orders_revenue.png.)
+## Reading of the monthly chart
+Monthly orders rise from about 800 in January 2017 to a one-month spike of about 7,500 in November 2017, then settle at a higher level of roughly 6,200 to 7,300 through August 2018. Revenue follows the same shape, peaking at about 1.0 million in November 2017 and holding near 0.98 to 0.99 million from March to May 2018 before easing to about 0.85 to 0.88 million from June. The rise through 2017 includes the platform’s early ramp-up, so it is not treated as a growth rate.
+
+## Report-ready statements
+- Revenue is concentrated among sellers: the top 10% of sellers account for about two thirds of revenue, while the largest product category accounts for under a tenth. (Evidence: F7 and F8.)
 
 ## Limitations
 - L1: Lateness and low review scores are associated; the data cannot show that lateness causes low scores.
