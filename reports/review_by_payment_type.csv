@@ -1,0 +1,6 @@
+payment_type,orders,avg_score
+credit_card,75882,4.088
+boleto,19635,4.087
+voucher,1602,3.948
+debit_card,1471,4.176
+not_defined,3,1.667
