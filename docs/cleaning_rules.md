@@ -41,3 +41,9 @@ Problems are flagged rather than silently deleted. Every rule cites a measured n
 - R16 implemented: zips with median coordinates outside the approximate Brazil box (an assumption) get lat/lng set to missing; raw medians kept in lat_median_raw / lng_median_raw.
 - R18 implemented: order_financials table (one row per order). revenue = sum of price for orders with items that are not canceled or unavailable. Payment totals used for reconciliation only.
 - R19 implemented: flag_zero_weight and product_weight_g_clean (zero weight treated as missing; author's assumption).
+
+## Step 5 results (measured)
+- R16: 8 zips had coordinates set to missing; 4 customers and 0 sellers are in those zips.
+- R18: 98,199 revenue-eligible orders. Total revenue (sum of price) = 13,494,400.74 (currency not stated in the dataset).
+- Payment vs items mismatch: pipeline flag count = 303 (cents-rounded, > 0.01). Raw differences: 423 above 0.01, 250 above 1, 98 above 10. The cent-level count is rounding-sensitive; quote the 250 (> 1) as the material mismatch figure. Flagged orders by status: 299 delivered, 2 canceled, 2 shipped. Cause unexplained.
+- R19: 4 products with zero weight flagged.
