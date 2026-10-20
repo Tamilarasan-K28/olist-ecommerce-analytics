@@ -1,4 +1,4 @@
-﻿-- 02_staging_remaining.sql
+-- 02_staging_remaining.sql
 DROP TABLE IF EXISTS staging.reviews;
 DROP TABLE IF EXISTS staging.payments_by_order;
 DROP TABLE IF EXISTS staging.category_translation;

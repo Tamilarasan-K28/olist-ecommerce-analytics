@@ -1,4 +1,4 @@
-﻿-- 03_staging_checks.sql: staging values vs the Module 1 reconciliation report.
+-- 03_staging_checks.sql: staging values vs the Module 1 reconciliation report.
 SELECT 'revenue (non-canceled/unavailable)' AS check_name,
        SUM(price) AS sql_value, 13494400.74 AS module1_value
 FROM staging.order_items i
