@@ -29,6 +29,9 @@ TABLES = {
     "order_financials": "order_financials_clean.csv",
     "payments": "payments_clean.csv",
     "order_reviews": "order_reviews_clean.csv",
+    "reviews": "reviews_clean.csv",
+    "payments_by_order": "payments_by_order_clean.csv",
+    "category_translation": "category_translation_clean.csv",
 }
 
 
