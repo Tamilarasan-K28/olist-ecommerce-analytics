@@ -1,0 +1,11 @@
+check,from_raw,from_cleaned,tolerance,status
+orders rows,99441.0,99441.0,0.0,PASS
+order_items rows,112650.0,112650.0,0.0,PASS
+"total revenue (sum of price, non-canceled/unavailable)",13494400.74,13494400.74,0.01,PASS
+revenue-eligible orders,98199.0,98199.0,0.0,PASS
+total freight,2251909.54,2251909.54,0.01,PASS
+total payment value,16008872.12,16008872.12,0.01,PASS
+delivery-eligible orders,96470.0,96470.0,0.0,PASS
+late delivered orders,7826.0,7826.0,0.0,PASS
+distinct customer_unique_id,96096.0,96096.0,0.0,PASS
+orders with a review,98673.0,98673.0,0.0,PASS
