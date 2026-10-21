@@ -8,3 +8,4 @@ data/processed/
 *.pbix.tmp
 .env
 reports/rfm_segments.csv
+data/powerbi/
