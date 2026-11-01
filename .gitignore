@@ -10,3 +10,5 @@ data/powerbi/
 .env
 reports/rfm_segments.csv
 powerbi/*.pbix
+
+models/*.joblib
