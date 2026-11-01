@@ -5,11 +5,8 @@ __pycache__/
 data/raw/
 data/interim/
 data/processed/
+data/powerbi/
 *.pbix.tmp
 .env
 reports/rfm_segments.csv
-data/powerbi/
-
-powerbi/*.pbix
-
 powerbi/*.pbix
