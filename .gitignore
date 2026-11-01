@@ -12,3 +12,5 @@ reports/rfm_segments.csv
 powerbi/*.pbix
 
 models/*.joblib
+
+reports/final_validation_log.txt
