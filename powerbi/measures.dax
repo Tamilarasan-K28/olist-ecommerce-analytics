@@ -1,0 +1,60 @@
+Orders (All) = COUNTROWS(fact_orders)
+
+Orders (Revenue-Eligible) = CALCULATE(COUNTROWS(fact_orders), fact_orders[is_revenue_eligible] = TRUE())
+
+Revenue = SUM(fact_orders[revenue])
+
+Freight = CALCULATE(SUM(fact_orders[items_freight_total]), fact_orders[is_revenue_eligible] = TRUE())
+
+AOV = DIVIDE([Revenue], [Orders (Revenue-Eligible)])
+
+Item Revenue = CALCULATE(SUM(fact_order_items[price]), fact_orders[is_revenue_eligible] = TRUE())
+
+Items Sold = CALCULATE(COUNTROWS(fact_order_items), fact_orders[is_revenue_eligible] = TRUE())
+
+Orders (Item Grain) = CALCULATE(DISTINCTCOUNT(fact_order_items[order_id]), fact_orders[is_revenue_eligible] = TRUE())
+
+Delivered Orders (Metric) = CALCULATE(COUNTROWS(fact_orders), fact_orders[delivery_metric_eligible] = TRUE())
+
+Late Orders = CALCULATE(COUNTROWS(fact_orders), fact_orders[is_late] = TRUE())
+
+Late Rate = DIVIDE([Late Orders], [Delivered Orders (Metric)])
+
+Avg Delivery Days = CALCULATE(AVERAGE(fact_orders[delivery_days]), fact_orders[delivery_metric_eligible] = TRUE())
+
+Reviewed Orders = COUNT(fact_orders[order_review_score])
+
+Avg Review Score = AVERAGE(fact_orders[order_review_score])
+
+Low Score Share = DIVIDE(CALCULATE(COUNTROWS(fact_orders), fact_orders[order_review_score] <= 2), [Reviewed Orders])
+
+People = COUNTROWS(FILTER(VALUES(dim_customers[customer_unique_id]), CALCULATE(COUNTROWS(fact_orders)) > 0))
+
+Repeat People = COUNTROWS(FILTER(VALUES(dim_customers[customer_unique_id]), CALCULATE(COUNTROWS(fact_orders)) > 1))
+
+Repeat Customer Rate = DIVIDE([Repeat People], [People])
+
+Payment Value = SUM(fact_payments[payment_value])
+
+Revenue Prior Month = CALCULATE([Revenue], DATEADD('Date'[Date], -1, MONTH))
+
+   Revenue MoM % =
+   VAR _m = SELECTEDVALUE('Date'[Month Start])
+   RETURN
+   IF(
+       ISBLANK(_m) || _m <= DATE(2017,1,1) || _m > DATE(2018,8,1),
+       BLANK(),
+       DIVIDE([Revenue] - [Revenue Prior Month], [Revenue Prior Month])
+   )
+
+   Category Share = DIVIDE([Item Revenue], CALCULATE([Item Revenue], ALL(dim_products)))
+
+   Review Share = DIVIDE([Reviewed Orders], CALCULATE([Reviewed Orders], ALL(fact_orders[order_review_score])))
+
+   QA Revenue Check = IF(ROUND(CALCULATE([Revenue], REMOVEFILTERS()), 2) = 13494400.74, "PASS", "FAIL")
+
+   QA Eligible Orders Check = IF(CALCULATE([Orders (Revenue-Eligible)], REMOVEFILTERS()) = 98199, "PASS", "FAIL")
+
+   QA Late Orders Check = IF(CALCULATE([Late Orders], REMOVEFILTERS()) = 7826, "PASS", "FAIL")
+
+   QA People Check = IF(CALCULATE([People], REMOVEFILTERS()) = 96096, "PASS", "FAIL")
